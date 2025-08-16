@@ -143,7 +143,7 @@ export function Pricing() {
                   viewport={{ once: true }}
                   className="absolute -top-4 left-1/2 transform -translate-x-1/2 z-50"
                 >
-                  <Badge className="bg-gradient-to-r from-primary to-secondary text-primary-foreground px-4 py-2 text-sm font-semibold flex items-center gap-2">
+                  <Badge className="absolute left-1/2 -translate-x-1/2 -top-6 bg-gradient-to-r from-primary to-secondary text-primary-foreground px-4 py-2 text-sm font-semibold flex items-center gap-2 whitespace-nowrap">
                     <Star className="w-4 h-4" />
                     Most Popular
                   </Badge>
@@ -216,7 +216,7 @@ export function Pricing() {
                     asChild
                   >
                     <a href={plan.href}>
-                      <span className="flex items-center gap-2">
+                      <span className="flex items-center gap-2 relative z-10 text-white">
                         {plan.cta}
                         {plan.name === "Starter" ? (
                           <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />

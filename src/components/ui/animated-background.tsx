@@ -1,359 +1,225 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { useEffect, useState } from "react"
-
-interface FloatingElement {
-  id: number
-  x: number
-  y: number
-  size: number
-  delay: number
-  duration: number
-  type: 'dot' | 'line' | 'circle' | 'triangle' | 'star' | 'hexagon'
-}
-
-interface Particle {
-  id: number
-  x: number
-  y: number
-  vx: number
-  vy: number
-  size: number
-  opacity: number
-  color: string
-}
-
-interface MorphingShape {
-  id: number
-  x: number
-  y: number
-  size: number
-  delay: number
-}
+import { useState, useEffect } from "react"
 
 export function AnimatedBackground() {
-  const [elements, setElements] = useState<FloatingElement[]>([])
-  const [particles, setParticles] = useState<Particle[]>([])
-  const [morphingShapes, setMorphingShapes] = useState<MorphingShape[]>([])
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
+  const [mouse, setMouse] = useState({ x: 0, y: 0 })
 
   useEffect(() => {
-    const generateElements = () => {
-      const newElements: FloatingElement[] = []
-      for (let i = 0; i < 40; i++) {
-        newElements.push({
-          id: i,
-          x: Math.random() * 100,
-          y: Math.random() * 100,
-          size: Math.random() * 8 + 3,
-          delay: Math.random() * 4,
-          duration: Math.random() * 5 + 4,
-          type: ['dot', 'line', 'circle', 'triangle', 'star', 'hexagon'][Math.floor(Math.random() * 6)] as any
-        })
-      }
-      setElements(newElements)
+    const handler = (e: MouseEvent) => {
+      setMouse({ x: e.clientX, y: e.clientY })
     }
-
-    const generateParticles = () => {
-      const newParticles: Particle[] = []
-      const colors = ['#00FF00', '#00C8C8', '#8A2BE2', '#FF6B6B', '#4ECDC4']
-      for (let i = 0; i < 80; i++) {
-        newParticles.push({
-          id: i,
-          x: Math.random() * window.innerWidth,
-          y: Math.random() * window.innerHeight,
-          vx: (Math.random() - 0.5) * 0.8,
-          vy: (Math.random() - 0.5) * 0.8,
-          size: Math.random() * 4 + 1,
-          opacity: Math.random() * 0.6 + 0.1,
-          color: colors[Math.floor(Math.random() * colors.length)]
-        })
-      }
-      setParticles(newParticles)
-    }
-
-    const generateMorphingShapes = () => {
-      const newShapes: MorphingShape[] = []
-      for (let i = 0; i < 6; i++) {
-        newShapes.push({
-          id: i,
-          x: Math.random() * 100,
-          y: Math.random() * 100,
-          size: Math.random() * 200 + 100,
-          delay: Math.random() * 2
-        })
-      }
-      setMorphingShapes(newShapes)
-    }
-
-    const handleMouseMove = (e: MouseEvent) => {
-      setMousePosition({ x: e.clientX, y: e.clientY })
-    }
-
-    generateElements()
-    generateParticles()
-    generateMorphingShapes()
-    window.addEventListener('mousemove', handleMouseMove)
-
-    return () => {
-      window.removeEventListener('mousemove', handleMouseMove)
-    }
+    window.addEventListener("mousemove", handler)
+    return () => window.removeEventListener("mousemove", handler)
   }, [])
-
-  useEffect(() => {
-    const animateParticles = () => {
-      setParticles(prev => prev.map(particle => ({
-        ...particle,
-        x: particle.x + particle.vx,
-        y: particle.y + particle.vy,
-        opacity: particle.opacity + (Math.random() - 0.5) * 0.1
-      })))
-    }
-
-    const interval = setInterval(animateParticles, 50)
-    return () => clearInterval(interval)
-  }, [])
-
-  const renderShape = (element: FloatingElement) => {
-    const baseClasses = "absolute opacity-20"
-    
-    switch (element.type) {
-      case 'triangle':
-        return (
-          <div 
-            className={`${baseClasses} w-0 h-0 border-l-[${element.size}px] border-l-transparent border-b-[${element.size * 2}px] border-b-primary border-r-[${element.size}px] border-r-transparent`}
-            style={{
-              left: `${element.x}%`,
-              top: `${element.y}%`,
-            }}
-          />
-        )
-      case 'star':
-        return (
-          <div 
-            className={`${baseClasses} text-primary`}
-            style={{
-              left: `${element.x}%`,
-              top: `${element.y}%`,
-              fontSize: `${element.size}px`,
-            }}
-          >
-            ⭐
-          </div>
-        )
-      case 'hexagon':
-        return (
-          <div 
-            className={`${baseClasses} bg-primary`}
-            style={{
-              left: `${element.x}%`,
-              top: `${element.y}%`,
-              width: `${element.size}px`,
-              height: `${element.size}px`,
-              clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)'
-            }}
-          />
-        )
-      default:
-        return (
-          <div
-            className={`${baseClasses} ${
-              element.type === 'dot' ? 'bg-primary rounded-full' :
-              element.type === 'line' ? 'bg-gradient-to-r from-primary to-secondary h-px' :
-              'border border-primary/30 rounded-full'
-            }`}
-            style={{
-              left: `${element.x}%`,
-              top: `${element.y}%`,
-              width: element.type === 'line' ? `${element.size * 15}px` : `${element.size}px`,
-              height: element.type === 'line' ? '1px' : `${element.size}px`,
-            }}
-          />
-        )
-    }
-  }
 
   return (
-    <div className="fixed inset-0 overflow-hidden pointer-events-none">
-      {/* Gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-br from-background via-background/95 to-background/90" />
-      
-      {/* Animated grid */}
-      <div className="absolute inset-0 opacity-10">
-        <div 
-          className="absolute inset-0 bg-[linear-gradient(90deg,transparent_1px,transparent_1px),linear-gradient(180deg,transparent_1px,transparent_1px)] bg-[size:50px_50px]"
+    <div className="fixed inset-0 z-0 overflow-hidden">
+      {/* Base Gradient Layer */}
+      <div className="absolute inset-0 bg-gradient-to-br from-[#0f172a] via-[#1e1b4b] to-[#312e81]" />
+
+      {/* Deep Space Layer */}
+      <div className="absolute inset-0 bg-gradient-radial from-gray-900/80 via-gray-900/60 to-transparent" />
+
+      {/* Subtle Grid */}
+      <div className="absolute inset-0 opacity-[0.03]">
+        <div
+          className="absolute inset-0 bg-[linear-gradient(90deg,rgba(255,255,255,0.2)_1px,transparent_1px),linear-gradient(180deg,rgba(255,255,255,0.2)_1px,transparent_1px)] bg-[size:40px_40px]"
           style={{
-            maskImage: 'radial-gradient(ellipse 80% 50% at 50% 50%, #000 70%, transparent 100%)',
-            animation: 'pulse 4s ease-in-out infinite'
+            maskImage:
+              "radial-gradient(ellipse 80% 60% at 50% 50%, black 70%, transparent 100%)",
+            WebkitMaskImage:
+              "radial-gradient(ellipse 80% 60% at 50% 50%, black 70%, transparent 100%)",
           }}
         />
       </div>
 
-      {/* Morphing shapes */}
-      {morphingShapes.map((shape) => (
+      {/* Animated Beams */}
+      <motion.div
+        className="absolute inset-0"
+        animate={{ opacity: [0.08, 0.18, 0.08] }}
+        transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
+      >
         <motion.div
-          key={shape.id}
-          className="absolute bg-gradient-to-r from-primary/5 via-secondary/5 to-accent/5 morphing-shape"
-          style={{
-            left: `${shape.x}%`,
-            top: `${shape.y}%`,
-            width: `${shape.size}px`,
-            height: `${shape.size}px`,
-          }}
+          className="absolute h-[60rem] w-[2px] bg-gradient-to-b from-cyan-400/0 via-cyan-400/70 to-cyan-400/0 blur-[3px]"
+          style={{ left: "15%", top: "-20%" }}
           animate={{
-            scale: [1, 1.2, 1],
-            opacity: [0.1, 0.3, 0.1],
-            rotate: [0, 180, 360]
+            y: [0, 100, 0],
+            rotate: [15, 25, 15],
+            scaleY: [0.8, 1.2, 0.8],
           }}
           transition={{
-            duration: 8,
-            repeat: Infinity,
-            ease: "easeInOut",
-            delay: shape.delay
-          }}
-        />
-      ))}
-
-      {/* Floating elements */}
-      {elements.map((element) => (
-        <motion.div
-          key={element.id}
-          animate={{
-            y: [0, -40, 0],
-            opacity: [0.2, 0.7, 0.2],
-            scale: [1, 1.3, 1],
-            rotate: element.type === 'line' ? [0, 180, 360] : [0, 0, 0]
-          }}
-          transition={{
-            duration: element.duration,
-            delay: element.delay,
+            duration: 14,
             repeat: Infinity,
             ease: "easeInOut",
           }}
-        >
-          {renderShape(element)}
-        </motion.div>
-      ))}
-
-      {/* Interactive particles */}
-      {particles.map((particle) => (
+        />
         <motion.div
-          key={particle.id}
-          className="absolute rounded-full particle-float"
-          style={{
-            left: particle.x,
-            top: particle.y,
-            width: particle.size,
-            height: particle.size,
-            opacity: particle.opacity,
-            backgroundColor: particle.color
-          }}
+          className="absolute h-[55rem] w-[2px] bg-gradient-to-b from-pink-400/0 via-pink-400/70 to-pink-400/0 blur-[3px]"
+          style={{ right: "20%", top: "-15%" }}
           animate={{
-            scale: [1, 1.5, 1],
-            opacity: [particle.opacity, particle.opacity * 2, particle.opacity]
+            y: [0, -90, 0],
+            rotate: [-15, -25, -15],
+            scaleY: [1.2, 0.8, 1.2],
           }}
           transition={{
-            duration: 3,
+            duration: 11,
             repeat: Infinity,
-            ease: "easeInOut"
+            ease: "easeInOut",
           }}
         />
-      ))}
+        <motion.div
+          className="absolute h-[45rem] w-[2px] bg-gradient-to-b from-purple-400/0 via-purple-400/70 to-purple-400/0 blur-[3px]"
+          style={{ left: "35%", top: "-10%" }}
+          animate={{
+            y: [0, 70, 0],
+            rotate: [5, 10, 5],
+            scaleY: [1, 1.3, 1],
+          }}
+          transition={{
+            duration: 16,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 2,
+          }}
+        />
+      </motion.div>
 
-      {/* Mouse trail effect */}
+      {/* Glowing Orbs */}
       <motion.div
-        className="absolute w-6 h-6 bg-primary/20 rounded-full blur-sm"
-        style={{
-          left: mousePosition.x - 12,
-          top: mousePosition.y - 12,
-        }}
+        className="absolute w-[45rem] h-[45rem] bg-gradient-radial from-cyan-500/30 via-cyan-500/20 to-transparent rounded-full blur-[120px]"
+        style={{ top: "5%", left: "20%" }}
         animate={{
-          scale: [1, 3, 1],
-          opacity: [0.3, 0.1, 0.3]
-        }}
-        transition={{
-          duration: 1.5,
-          repeat: Infinity,
-          ease: "easeInOut"
-        }}
-      />
-
-      {/* Enhanced glow effects */}
-      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-r from-primary/10 via-secondary/10 to-accent/10 rounded-full blur-3xl animate-pulse neon-glow" />
-      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-gradient-to-r from-accent/10 via-primary/10 to-secondary/10 rounded-full blur-3xl animate-pulse delay-1000 neon-glow" />
-      
-      {/* Floating orbs with enhanced effects */}
-      <motion.div
-        className="absolute top-1/3 right-1/4 w-32 h-32 bg-gradient-to-r from-primary/20 to-secondary/20 rounded-full blur-xl particle-float"
-        animate={{
-          y: [0, -30, 0],
-          x: [0, 15, 0],
           scale: [1, 1.2, 1],
-          rotate: [0, 180, 360]
+          opacity: [0.2, 0.3, 0.2],
+          x: [0, 20, 0],
+          y: [0, -20, 0],
         }}
         transition={{
-          duration: 10,
-          repeat: Infinity,
-          ease: "easeInOut"
-        }}
-      />
-      
-      <motion.div
-        className="absolute bottom-1/3 left-1/4 w-24 h-24 bg-gradient-to-r from-secondary/20 to-accent/20 rounded-full blur-xl particle-float"
-        animate={{
-          y: [0, 20, 0],
-          x: [0, -12, 0],
-          scale: [1, 0.8, 1],
-          rotate: [0, -180, -360]
-        }}
-        transition={{
-          duration: 8,
+          duration: 20,
+          times: [0, 0.5, 1],
           repeat: Infinity,
           ease: "easeInOut",
-          delay: 2
+        }}
+      />
+      <motion.div
+        className="absolute w-[40rem] h-[40rem] bg-gradient-radial from-fuchsia-500/25 via-fuchsia-500/15 to-transparent rounded-full blur-[100px]"
+        style={{ bottom: "10%", right: "15%" }}
+        animate={{
+          scale: [1.1, 0.9, 1.1],
+          opacity: [0.15, 0.25, 0.15],
+          x: [0, -30, 0],
+          y: [0, 20, 0],
+        }}
+        transition={{
+          duration: 18,
+          repeat: Infinity,
+          ease: "easeInOut",
+          delay: 2,
+        }}
+      />
+      <motion.div
+        className="absolute w-[35rem] h-[35rem] bg-gradient-radial from-violet-500/20 via-violet-500/15 to-transparent rounded-full blur-[90px]"
+        style={{ top: "35%", right: "25%" }}
+        animate={{
+          scale: [1, 1.15, 1],
+          opacity: [0.12, 0.22, 0.12],
+          x: [0, 15, 0],
+          y: [0, 15, 0],
+        }}
+        transition={{
+          duration: 22,
+          repeat: Infinity,
+          ease: "easeInOut",
+          delay: 1,
         }}
       />
 
-      {/* Energy waves with enhanced effects */}
-      <div className="absolute inset-0">
-        {[...Array(4)].map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute inset-0 border border-primary/10 rounded-full neon-glow"
-            style={{
-              margin: `${(i + 1) * 120}px`
-            }}
-            animate={{
-              scale: [1, 1.3, 1],
-              opacity: [0.1, 0.4, 0.1],
-              rotate: [0, 180, 360]
-            }}
-            transition={{
-              duration: 6,
-              repeat: Infinity,
-              ease: "easeInOut",
-              delay: i * 1.5
-            }}
-          />
-        ))}
-      </div>
+      {/* Atmospheric Particles */}
+      {[...Array(15)].map((_, i) => (
+        <motion.div
+          key={`particle-${i}`}
+          className="absolute w-[4px] h-[4px] rounded-full bg-white/40 blur-[1px]"
+          style={{
+            top: `${Math.random() * 100}%`,
+            left: `${Math.random() * 100}%`,
+          }}
+          animate={{
+            scale: [1, 2, 1],
+            opacity: [0.3, 0.6, 0.3],
+            x: [0, Math.random() * 40 - 20, 0],
+            y: [0, Math.random() * 40 - 20, 0],
+          }}
+          transition={{
+            duration: 8 + Math.random() * 4,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: Math.random() * 2,
+          }}
+        />
+      ))}
 
-      {/* Matrix rain effect */}
-      <div className="absolute inset-0 matrix-rain opacity-5" />
-
-      {/* Holographic elements */}
+      {/* Gradient Scan Lines */}
       <motion.div
-        className="absolute top-1/2 left-1/2 w-64 h-64 holographic-effect rounded-full blur-3xl opacity-10"
+        className="absolute h-[0.5px] w-full bg-gradient-to-r from-transparent via-cyan-400/30 to-transparent"
+        style={{ top: "35%" }}
+        animate={{ opacity: [0.1, 0.4, 0.1] }}
+        transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+      />
+      <motion.div
+        className="absolute h-[0.5px] w-full bg-gradient-to-r from-transparent via-pink-400/30 to-transparent"
+        style={{ top: "65%" }}
+        animate={{ opacity: [0.3, 0.1, 0.3] }}
+        transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+      />
+
+      {/* Interactive Mouse Glow */}
+      <motion.div
+        className="pointer-events-none absolute -translate-x-1/2 -translate-y-1/2 w-[35rem] h-[35rem] bg-gradient-radial from-purple-500/20 via-indigo-500/10 to-transparent rounded-full blur-[80px]"
         animate={{
-          scale: [1, 1.5, 1],
-          rotate: [0, 360],
-          opacity: [0.1, 0.3, 0.1]
+          x: mouse.x,
+          y: mouse.y,
+          scale: [1, 1.05, 1],
         }}
         transition={{
-          duration: 12,
-          repeat: Infinity,
-          ease: "linear"
+          x: { duration: 0.3 },
+          y: { duration: 0.3 },
+          scale: { duration: 4, repeat: Infinity, ease: "easeInOut" },
+        }}
+      />
+
+      {/* Star Particles (fixed) */}
+      {[...Array(40)].map((_, i) => (
+        <motion.div
+          key={i}
+          className="absolute w-[2px] h-[2px] rounded-full bg-white/80"
+          style={{
+            top: `${Math.random() * 100}%`,
+            left: `${Math.random() * 100}%`,
+          }}
+          animate={{
+            opacity: [0, 1, 0],
+            scale: [0.8, 1.2, 0.8],
+          }}
+          transition={{
+            duration: 1.5 + Math.random() * 2,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: Math.random() * 2,
+          }}
+        />
+      ))}
+
+      {/* Mouse Reactive Glow */}
+      <motion.div
+        className="absolute w-64 h-64 rounded-full pointer-events-none"
+        style={{
+          left: mouse.x - 128,
+          top: mouse.y - 128,
+          background:
+            "radial-gradient(circle, rgba(236,72,153,0.25) 0%, rgba(139,92,246,0.15) 50%, transparent 100%)",
+          filter: "blur(80px)",
         }}
       />
     </div>

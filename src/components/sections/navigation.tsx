@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Button } from "@/components/ui/button"
-import { Menu, X } from "lucide-react"
+import { Menu, X, Package, Sparkles, DollarSign, BookOpen, LogIn, Pointer } from "lucide-react"
 
 export function Navigation() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -17,10 +17,10 @@ export function Navigation() {
   }
 
   const navLinks = [
-    { href: "#product", label: "Product" },
-    { href: "#features", label: "Features" },
-    { href: "#pricing", label: "Pricing" },
-    { href: "#blog", label: "Blog" },
+    { href: "#product", label: "Product", icon: Package },
+    { href: "#features", label: "Features", icon: Sparkles },
+    { href: "#pricing", label: "Pricing", icon: DollarSign },
+    { href: "#blog", label: "Blog", icon: BookOpen },
   ]
 
   return (
@@ -38,7 +38,13 @@ export function Navigation() {
             whileHover={{ scale: 1.05 }}
             transition={{ duration: 0.2 }}
           >
-            Pointer
+            <div className="text-white/80 hover:text-white transition-colors duration-200 flex items-center gap-2"
+            >
+              <span className="flex items-center">
+                Pointer
+                <Pointer className="w-5 h-5 ml-1" />
+              </span>
+            </div>
           </motion.div>
 
           {/* Desktop Navigation Links */}
@@ -47,9 +53,10 @@ export function Navigation() {
               <motion.a
                 key={link.href}
                 href={link.href}
-                className="text-white/80 hover:text-white transition-colors duration-200"
+                className="text-white/80 hover:text-white transition-colors duration-200 flex items-center gap-2"
                 whileHover={{ y: -2 }}
               >
+                <link.icon className="w-4 h-4" />
                 {link.label}
               </motion.a>
             ))}
@@ -63,9 +70,13 @@ export function Navigation() {
           >
             <Button 
               variant="outline" 
-              className="glass-effect border-white/20 text-white hover:bg-white/10 hover:border-white/40"
+              className="glass-effect border-white/20 text-white hover:bg-white/10 hover:border-white/40 flex items-center gap-2"
             >
-              Sign In
+             <div className="flex items-center gap-2">
+               <LogIn className="w-4 h-4" />
+               Sign In
+              </div>
+              
             </Button>
           </motion.div>
 

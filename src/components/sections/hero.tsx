@@ -2,7 +2,8 @@
 
 import { motion } from "framer-motion"
 import { Button } from "@/components/ui/button"
-import { ArrowRight, Play, Zap, Code, Users, Star } from "lucide-react"
+import { ArrowRight, Play, Zap, Code, Users, Star, Download } from "lucide-react"
+import { AnimatedBackground } from "@/components/ui/animated-background"
 
 const stats = [
   { label: "Active Users", value: "50K+", icon: Users },
@@ -20,17 +21,9 @@ const floatingBadges = [
 export function Hero() {
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-16">
-      {/* Enhanced background effects */}
-      <div className="absolute inset-0 bg-gradient-to-br from-background via-background/95 to-background/90" />
-      
-      {/* Animated grid pattern */}
-      <div className="absolute inset-0 opacity-5">
-        <div 
-          className="absolute inset-0 bg-[linear-gradient(90deg,transparent_1px,transparent_1px),linear-gradient(180deg,transparent_1px,transparent_1px)] bg-[size:30px_30px]"
-          style={{
-            maskImage: 'radial-gradient(ellipse 80% 50% at 50% 50%, #000 70%, transparent 100%)'
-          }}
-        />
+      {/* Animated Background */}
+      <div className="absolute inset-0">
+        <AnimatedBackground />
       </div>
 
       <div className="container mx-auto px-4 py-20 relative z-10">
@@ -107,23 +100,27 @@ export function Hero() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.6 }}
-            className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16"
+            className="flex justify-center items-center space-x-4 mb-16"
           >
             <Button 
               size="lg" 
-              className="liquid-button text-lg px-8 py-4 font-semibold ripple-effect magnetic-hover"
+              className="bg-[#00DC8A] hover:bg-[#00DC8A]/90 text-black font-semibold h-12 flex items-center justify-center gap-1.5 min-w-[160px]"
             >
-              Get Started
-              <ArrowRight className="ml-2 w-5 h-5" />
+              <span className="flex items-center">
+                Get Started
+                <ArrowRight className="w-5 h-5 ml-1" />
+              </span>
             </Button>
             
             <Button 
               variant="outline" 
               size="lg" 
-              className="text-lg px-8 py-4 font-semibold glass-effect border-primary/30 hover:border-primary/60 ripple-effect magnetic-hover"
+              className="border border-[#00DC8A]/20 hover:border-[#00DC8A]/40 text-white font-semibold h-12 flex items-center justify-center gap-1.5 min-w-[160px]"
             >
-              <Play className="mr-2 w-5 h-5" />
-              Watch Demo
+              <span className="flex items-center">
+                <Play className="w-5 h-5 mr-1" />
+                Watch Demo
+              </span>
             </Button>
           </motion.div>
 
@@ -157,14 +154,28 @@ export function Hero() {
                   </div>
                   <span className="text-sm text-muted-foreground ml-4">main.tsx</span>
                 </div>
-                <div className="flex items-center space-x-2">
-                  <Button variant="ghost" size="sm" className="hover:bg-primary/10">
-                    <Play className="w-4 h-4 mr-2" />
-                    Run
+                <div className="flex items-center gap-2">
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="hover:bg-primary/10 flex items-center"
+                  >
+                    <div className="flex items-center justify-center">
+                      <Play className="w-4 h-4" strokeWidth={2} />
+                      <span className="ml-2 relative top-[0.5px]">Run</span>
+                    </div>
                   </Button>
-                  <Button variant="ghost" size="sm" className="hover:bg-primary/10">
-                    Download
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="hover:bg-primary/10"
+                  >
+                    <div className="flex items-center justify-center">
+                      <Download className="w-4 h-4" strokeWidth={2} />
+                      <span className="ml-2 relative top-[0.5px]">Download</span>
+                    </div>
                   </Button>
+                   
                 </div>
               </div>
               

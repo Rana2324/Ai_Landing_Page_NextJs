@@ -50,10 +50,12 @@ export function CTA() {
           >
             <Button 
               size="lg" 
-              className="liquid-button text-lg px-8 py-4 font-semibold ripple-effect magnetic-hover"
+              className="bg-[#00DC8A] hover:bg-[#00DC8A]/90 text-black font-semibold h-12 flex items-center justify-center gap-1.5 min-w-[160px]"
             >
-              Get Started
-              <ArrowRight className="ml-2 w-5 h-5" />
+              <span className="flex items-center">
+                Get Started
+                <ArrowRight className="w-5 h-5 ml-1" />
+              </span>
             </Button>
           </motion.div>
 
